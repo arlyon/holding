@@ -1,0 +1,21 @@
+[package]
+authors = ["Alexander Lyon <arlyon@me.com>"]
+description = "A flexible library for defining planets and orbits"
+documentation = "https://docs.rs/holding_solar"
+edition = "2018"
+license = "MIT OR Apache-2.0"
+name = "holding_solar"
+readme = "readme.md"
+repository = "https://github.com/arlyon/holding/tree/master/holding_solar"
+version = "0.1.0"
+
+[dependencies]
+colored = "2.0.0"
+holding_color = {path = "../holding_color"}
+holding_kronos = {path = "../holding_kronos"}
+num_enum = "0.5"
+serde = {version = "1.0", features = ["derive"]}
+strum = "0.19.2"
+strum_macros = "0.19.2"
+thiserror = "1.0"
+uuid = {version = "0.8.1", features = ["serde", "v4"]}

@@ -1,0 +1,15 @@
+[package]
+authors = ["Alexander Lyon <arlyon@me.com>"]
+description = "A provider of simple colors."
+documentation = "https://docs.rs/holding_color"
+edition = "2018"
+homepage = "https://crates.io/crates/holding_color"
+license = "MIT OR Apache-2.0"
+name = "holding_color"
+readme = "readme.md"
+repository = "https://github.com/arlyon/holding/tree/master/holding_color"
+version = "0.1.0"
+
+[dependencies]
+colored = "2"
+serde = {version = "1.0", features = ["derive"]}

@@ -1,0 +1,42 @@
+[package]
+authors = ["Alexander Lyon <arlyon@me.com>"]
+categories = ["command-line-utilities", "games", "date-and-time"]
+description = "Commandline toolkit for immersive DnD"
+edition = "2018"
+homepage = "https://crates.io/crates/holding"
+keywords = ["dnd", "dungeons-and-dragons", "dice", "calendar"]
+license = "MIT OR Apache-2.0"
+name = "holding"
+readme = "readme.md"
+repository = "https://github.com/arlyon/holding"
+version = "0.1.0"
+
+[dependencies]
+anyhow = "1.0"
+clap = "3.0.0-beta.1"
+clap_generate = "3.0.0-beta.1"
+dnd_dice_roller = "0.4"
+holding_color = {path = "holding_color"}
+holding_kronos = {path = "holding_kronos"}
+holding_solar = {path = "holding_solar"}
+human-panic = "1.0"
+itertools = "0.9"
+ordinal = "0.2"
+rspotify = {version = "0.10", features = ["blocking"], optional = true}
+serde = "1.0"
+serde_yaml = "0.8"
+strum = "0.19"
+strum_macros = "0.19"
+thiserror = "1.0"
+uuid = "0.8"
+
+[features]
+default = ["sound"]
+sound = ["rspotify"]
+
+[workspace]
+members = [
+  "holding_solar",
+  "holding_kronos",
+  "holding_color",
+]
