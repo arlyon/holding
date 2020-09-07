@@ -75,10 +75,8 @@ impl Now {
                 }
             }
 
-            if let None = home.orbit {
-                if home.children.is_empty() {
-                    println!("Space is a cold and empty place.")
-                }
+            if home.orbit.is_none() && home.children.is_empty() {
+                println!("Space is a cold and empty place.")
             }
         }
 

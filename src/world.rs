@@ -92,7 +92,7 @@ impl World {
     pub fn new(name: String, calendar: Calendar, home_planet: CelestialBody) -> Self {
         let home_planet_id = home_planet.id;
         Self {
-            name: name,
+            name,
             time: DateTime::new(0, 1),
             canonical_time: None,
             calendar,
@@ -113,7 +113,7 @@ impl World {
         self.records.last().unwrap()
     }
 
-    pub fn update_time(&mut self, expr: &String) -> Result<()> {
+    pub fn update_time(&mut self, expr: &str) -> Result<()> {
         let new_time = self.calendar.parse(expr, Some(self.time))?;
 
         if new_time < self.time {
@@ -124,9 +124,9 @@ impl World {
         Ok(())
     }
 
-    pub fn jump_time(&mut self, expr: &String) -> Result<()> {
+    pub fn jump_time(&mut self, expr: &str) -> Result<()> {
         if self.canonical_time.is_none() {
-            self.canonical_time = Some(self.time.clone());
+            self.canonical_time = Some(self.time);
         }
 
         self.time = self.calendar.parse(expr, Some(self.time))?;
@@ -147,6 +147,6 @@ impl World {
     pub fn validate(&self) -> Result<bool> {
         self.get_planet(self.home_planet)
             .map(|p| p.validate_calendar(&self.calendar).map_err(Into::into))
-            .unwrap_or(Err(anyhow!("Home planet doest not exist.")))
+            .unwrap_or_else(|| Err(anyhow!("Home planet doest not exist.")))
     }
 }

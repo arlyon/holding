@@ -53,7 +53,7 @@ enum WorldCreationError {
 
 pub fn create_world(path: &PathBuf, name: String, force: bool) -> Result<World> {
     if path.exists() && path.read_dir()?.next().is_some() && !force {
-        Err(WorldCreationError::PathExists)?;
+        return Err(WorldCreationError::PathExists);
     };
 
     create_dir_all(path)?;

@@ -130,7 +130,7 @@ impl Sound {
             .scope("user-modify-playback-state")
             .build();
 
-        let token_info = get_token(&mut oauth).ok_or(anyhow!("Could not get token."))?;
+        let token_info = get_token(&mut oauth).ok_or_else(|| anyhow!("Could not get token."))?;
 
         let client_credential = SpotifyClientCredentials::default()
             .token_info(token_info)

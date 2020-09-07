@@ -2,7 +2,7 @@
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Serialize, Deserialize, Debug)]
+#[derive(Clone, Serialize, Deserialize, Debug, Eq, PartialEq)]
 pub struct Eras(pub Vec<Era>);
 
 /// An era is a contiguous block of time in a calendar from which time can be referenced.
@@ -11,7 +11,7 @@ pub struct Eras(pub Vec<Era>);
 ///
 /// An era that is unbounded on the left (ie. has no start) is considered to have always
 /// existed, while an era that is unbounded on the right right has not ended.
-#[derive(Clone, Serialize, Deserialize, Debug)]
+#[derive(Clone, Serialize, Deserialize, Debug, Eq, PartialEq)]
 pub struct Era {
     /// The name of the Era.
     pub name: String,
