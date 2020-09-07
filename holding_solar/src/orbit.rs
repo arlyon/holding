@@ -121,12 +121,12 @@ impl Orbit {
     /// Calculates the distance between a body and its parent.
     pub fn get_distance(&self, seconds: u32) -> f32 {
         let radians = self.get_orbit_radians(seconds);
-        self.get_semimajor_axis() * (1.0 - self.eccentricity.powf(2.0))
+        self.semimajor_axis() * (1.0 - self.eccentricity.powf(2.0))
             / (1.0 + self.eccentricity * radians.cos())
     }
 
     /// Gets the semimajor axis
-    pub fn get_semimajor_axis(&self) -> f32 {
+    pub fn semimajor_axis(&self) -> f32 {
         (self.period as f32).powf(2.0).powf(-3.0)
     }
 
