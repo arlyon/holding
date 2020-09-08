@@ -9,12 +9,13 @@ use clap::Clap;
 use strum_macros::Display;
 
 /// Play a number of ambient sounds through spotify.
-#[derive(Clap)]
+#[derive(Clap, Eq, PartialEq)]
 pub enum Sound {
     Ambient(Ambient),
     Atmosphere(Atmosphere),
     Combat(Combat),
     Mood(Mood),
+    Stop,
     Auto,
 }
 
@@ -26,11 +27,12 @@ impl Display for Sound {
             Sound::Combat(a) => a.fmt(f),
             Sound::Mood(a) => a.fmt(f),
             Sound::Auto => write!(f, "auto"),
+            Sound::Stop => write!(f, "stop"),
         }
     }
 }
 
-#[derive(Clap, Display)]
+#[derive(Clap, Display, Eq, PartialEq)]
 pub enum Ambient {
     #[strum(serialize = "7cgECSzxFYwjHugNdbur1O")]
     Cavern,
@@ -46,7 +48,7 @@ pub enum Ambient {
     Storm,
 }
 
-#[derive(Clap, Display)]
+#[derive(Clap, Display, Eq, PartialEq)]
 pub enum Atmosphere {
     #[strum(serialize = "2t5TWAPs6HYuJ3xbpjHYpx")]
     TheCapital,
@@ -76,7 +78,7 @@ pub enum Atmosphere {
     TheWild,
 }
 
-#[derive(Clap, Display)]
+#[derive(Clap, Display, Eq, PartialEq)]
 pub enum Combat {
     #[strum(serialize = "0Q6hJZYIEu3LwbyBBHjjHo")]
     Boss,
@@ -92,7 +94,7 @@ pub enum Combat {
     Tough,
 }
 
-#[derive(Clap, Display)]
+#[derive(Clap, Display, Eq, PartialEq)]
 pub enum Mood {
     #[strum(serialize = "6nSstCQcmzcEUSx8gBrcek")]
     Creepy,
@@ -120,11 +122,11 @@ pub enum Mood {
 
 impl Sound {
     pub fn run(&self) -> Result<()> {
-        if let Sound::Auto = self {
+        let playlist = if *self != Sound::Auto {
+            self.to_string()
+        } else {
             todo!()
-        }
-
-        let playlist = self.to_string();
+        };
 
         let mut oauth = SpotifyOAuth::default()
             .scope("user-modify-playback-state")
@@ -140,17 +142,23 @@ impl Sound {
             .client_credentials_manager(client_credential)
             .build();
 
-        let playlist = spotify
-            .playlist(&playlist, None, None)
-            .map_err(|e| anyhow!(e))
-            .context("Could not load playlist")?;
+        if let Sound::Stop = self {
+            spotify
+                .pause_playback(None)
+                .context("could not stop sound")?;
+        } else {
+            let playlist = spotify
+                .playlist(&playlist, None, None)
+                .map_err(|e| anyhow!(e))
+                .context("could not load playlist")?;
 
-        spotify
-            .start_playback(None, Some(playlist.uri), None, None, None)
-            .map_err(|e| anyhow!(e))
-            .context("Could not play track")?;
+            spotify
+                .start_playback(None, Some(playlist.uri), None, None, None)
+                .map_err(|e| anyhow!(e))
+                .context("could not play track")?;
 
-        println!("Playing {}", playlist.name);
+            println!("Playing {}", playlist.name);
+        }
 
         Ok(())
     }
