@@ -1,10 +1,16 @@
 use std::convert::TryFrom;
 
 use num_enum::{IntoPrimitive, TryFromPrimitive};
-use strum_macros::Display;
+use strum::Display;
 
-#[derive(IntoPrimitive, Clone, Debug, TryFromPrimitive, Eq, PartialEq, Copy, Display)]
+use crate::{
+    calendar::traits::DayCycle,
+    datetime::{traits::ShowTime, DateTime},
+};
+
+#[derive(IntoPrimitive, TryFromPrimitive, Clone, Debug, Eq, PartialEq, Copy, Display)]
 #[repr(u8)]
+#[allow(missing_docs)]
 pub enum TimeOfDay {
     #[strum(serialize = "late in the night")]
     LateNight,
@@ -26,11 +32,15 @@ pub enum TimeOfDay {
 
 impl TimeOfDay {
     /// Gets the time of day for a given hour.
-    pub fn from_time(curr_hour: u32, max_hour: u32) -> Self {
-        Self::try_from(((curr_hour as f64 / max_hour as f64) * 8.0).floor() as u8).unwrap()
+    ///
+    /// Returns Some(TimeOfDay) when curr_hour < max_hour, else None.
+    pub fn from_time(curr_hour: u32, max_hour: u32) -> Option<Self> {
+        let index = (f64::from(curr_hour) * 8.0 / f64::from(max_hour)) as u8;
+        Self::try_from(index).ok()
     }
 
-    pub fn is_day(&self) -> bool {
+    /// Checks if a given `TimeOfDay` is during day or night.
+    pub fn is_day(self) -> bool {
         match self {
             TimeOfDay::LateNight => false,
             TimeOfDay::Dawn => false,
@@ -44,12 +54,19 @@ impl TimeOfDay {
     }
 }
 
+impl<'a> From<DateTime<'a>> for TimeOfDay {
+    fn from(dt: DateTime<'a>) -> Self {
+        Self::from_time(dt.hour(), dt.calendar().hours_in_day())
+            .expect("If this is not in range it is programmer error")
+    }
+}
+
 #[cfg(test)]
 mod test {
     use crate::datetime::time_of_day::TimeOfDay;
 
     #[test]
-    pub fn test_get_time() {
+    pub fn get_time() {
         assert_eq!(TimeOfDay::from_time(0, 8), TimeOfDay::LateNight);
         assert_eq!(TimeOfDay::from_time(1, 8), TimeOfDay::Dawn);
         assert_eq!(TimeOfDay::from_time(2, 8), TimeOfDay::Sunrise);

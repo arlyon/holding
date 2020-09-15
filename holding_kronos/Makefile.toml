@@ -1,0 +1,18 @@
+[tasks.lint]
+args = ["clippy"]
+command = "cargo"
+dependencies = ["format"]
+
+[tasks.format]
+args = ["fmt", "--", "--emit=files"]
+command = "cargo"
+
+[tasks.test]
+args = ["test"]
+command = "cargo"
+dependencies = ["lint"]
+
+[tasks.geiger]
+args = ["geiger"]
+command = "cargo"
+install_crate = "cargo-geiger"

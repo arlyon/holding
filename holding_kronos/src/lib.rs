@@ -7,11 +7,11 @@
 //! year split up into months, and days organised into
 //! weeks.
 
+#![forbid(unsafe_code)]
 #![deny(
     missing_docs,
     trivial_casts,
     trivial_numeric_casts,
-    unsafe_code,
     unreachable_code,
     missing_copy_implementations,
     unused_import_braces,
@@ -26,8 +26,6 @@
     clippy::panic
 )]
 
-mod calendar;
-mod datetime;
-
-pub use calendar::{Calendar, Era};
-pub use datetime::{CalendarDateTime, DateTime};
+pub mod calendar;
+pub mod datetime;
+mod util;
