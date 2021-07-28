@@ -6,6 +6,7 @@
     clippy::trivially_copy_pass_by_ref,
     clippy::panic
 )]
+#![forbid(unsafe_code)]
 
 use anyhow::Result;
 use clap::Clap;
@@ -13,8 +14,10 @@ use human_panic::setup_panic;
 
 use opts::Command;
 
+mod character;
 mod opts;
 mod persistence;
+mod record;
 mod world;
 
 pub use opts::Opts;
@@ -23,7 +26,7 @@ fn main() -> Result<()> {
     setup_panic!();
 
     let opts: Opts = Opts::parse();
-    let path = opts.path.unwrap_or(".".into());
+    let path = opts.path.unwrap_or_else(|| ".".into());
 
     match opts.command {
         Command::Dice(d) => d.run()?,
@@ -36,6 +39,8 @@ fn main() -> Result<()> {
         Command::New(n) => n.run(&path)?,
         Command::Weather(w) => w.run(&path)?,
         Command::Completion(c) => c.run()?,
+        Command::History(r) => r.run(&path)?,
+        Command::Characters(c) => c.run(&path)?,
     };
 
     Ok(())

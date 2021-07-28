@@ -4,6 +4,7 @@ use ordinal::Ordinal;
 
 use anyhow::Result;
 use clap::Clap;
+use holding_kronos::datetime::traits::{ShowDate, ShowTime};
 
 use crate::persistence::load_world;
 use holding_color::colored::*;
@@ -14,20 +15,19 @@ use holding_solar::PlanetStore;
 pub struct Now;
 
 impl Now {
-    pub fn run(&self, path: &PathBuf) -> Result<()> {
-        let world = load_world(&path)?;
-        let time_with_cal = world.time.with_calendar(&world.calendar);
-        let time_of_day = time_with_cal.time_of_day();
-        let is_day = time_of_day.is_day();
+    pub fn run(&self, path: &Path) -> Result<()> {
+        let world = load_world(path)?;
+        let time = world.time.into_datetime(&world.calendar);
+
         println!(
             "It is {:0>2}:{:0>2}, {} on {} the {} day of {} in the year {}\n",
-            time_with_cal.hour(),
-            time_with_cal.minute(),
-            time_of_day,
-            time_with_cal.week_day_name(),
-            Ordinal(time_with_cal.month_day()),
-            time_with_cal.month_name(),
-            time_with_cal.year()
+            time.hour(),
+            time.minute(),
+            time.time_of_day(),
+            time.week_day_name(),
+            Ordinal(time.day()),
+            time.month_name(),
+            time.year()
         );
 
         if world.jumped() {
@@ -38,6 +38,7 @@ impl Now {
             )
         }
 
+        let is_day = time.time_of_day().is_day();
         if let Some(home) = world.get_planet(world.home_planet) {
             let night_status = if is_day { "the sky" } else { "the night sky" };
             println!(
@@ -65,9 +66,7 @@ impl Now {
 
             for child in home.children.iter().filter_map(|c| world.get_planet(*c)) {
                 let name = child.name.color(Color::from(child.color)).bold();
-                let phase = child
-                    .orbit
-                    .and_then(|o| o.get_phase(&world, world.time.with_calendar(&world.calendar)));
+                let phase = child.orbit.and_then(|o| o.get_phase(&world, time));
                 if let Some(phase) = phase {
                     println!("- {} The moon {} is {}.", phase.unicode(), name, phase);
                 } else {

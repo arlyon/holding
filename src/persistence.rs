@@ -23,11 +23,11 @@ pub fn load_world(path: &Path) -> Result<World> {
     }
 
     let f = File::open(&path).context("Couldn't find world.")?;
-    let world_data: World = serde_yaml::from_reader(f).context("world file is corrupted.")?;
-    world_data
-        .validate()
-        .context("Could not validate the world.")?;
-    Ok(world_data)
+    let world: World = serde_yaml::from_reader(f).context("world file is corrupted.")?;
+
+    world.validate().context("Could not validate the world.")?;
+
+    Ok(world)
 }
 
 pub fn save_world(path: &Path, world: &World) -> Result<()> {
@@ -53,7 +53,7 @@ enum WorldCreationError {
 
 pub fn create_world(path: &Path, name: String, force: bool) -> Result<World> {
     if path.exists() && path.read_dir()?.next().is_some() && !force {
-        return Err(WorldCreationError::PathExists);
+        return Err(WorldCreationError::PathExists.into());
     };
 
     create_dir_all(path)?;

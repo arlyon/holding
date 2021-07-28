@@ -4,8 +4,10 @@ use clap::Clap;
 
 use bodies::Planetarium;
 use calendar::Time;
+use characters::Characters;
 use completion::Completion;
 use dice::Dice;
+use history::History;
 use new::New;
 use now::Now;
 use record::AddRecord;
@@ -15,8 +17,10 @@ use weather::Weather;
 
 mod bodies;
 mod calendar;
+mod characters;
 mod completion;
 mod dice;
+mod history;
 mod host;
 mod new;
 mod now;
@@ -40,10 +44,12 @@ pub struct Opts {
 #[derive(Clap)]
 pub enum Command {
     Dice(Dice),
+    Characters(Characters),
     Now(Now),
     New(New),
     Time(Time),
     Record(AddRecord),
+    History(History),
     Weather(Weather),
     Planetarium(Planetarium),
     #[cfg(feature = "sound")]

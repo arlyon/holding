@@ -1,0 +1,234 @@
+---
+name: carthage
+calendar:
+  year:
+    - name: January
+      days: 31
+    - name: February
+      days: 28
+    - name: March
+      days: 31
+    - name: April
+      days: 30
+    - name: May
+      days: 31
+    - name: June
+      days: 30
+    - name: July
+      days: 31
+    - name: August
+      days: 31
+    - name: September
+      days: 30
+    - name: October
+      days: 31
+    - name: November
+      days: 30
+    - name: December
+      days: 31
+  week:
+    - name: Monday
+    - name: Tuesday
+    - name: Wednesday
+    - name: Thursday
+    - name: Friday
+    - name: Saturday
+    - name: Sunday
+  day:
+    seconds_in_minute: 60
+    minutes_in_hour: 60
+    hours_in_day: 24
+time:
+  date:
+    year: 1
+    month: 2
+    day: 15
+  time:
+    hour: 5
+    minute: 33
+    second: 12
+canonical_time: ~
+home_planet: 68f83dbc-1894-4d2f-b3a2-ec9fe59f8071
+bodies:
+  - id: 68f83dbc-1894-4d2f-b3a2-ec9fe59f8071
+    name: Earth
+    orbit:
+      parent: ba960281-1eb6-4f45-9b40-1c87a34dd316
+      body: 68f83dbc-1894-4d2f-b3a2-ec9fe59f8071
+      shift: 0
+      eccentricity: 0.0
+      period: 31536000
+    color: Green
+    children:
+      - dac55918-a496-4e18-a64d-52daf1d1b0da
+    rotational_period: 86400
+    temperature: 290
+  - id: dac55918-a496-4e18-a64d-52daf1d1b0da
+    name: Moon
+    orbit:
+      parent: 68f83dbc-1894-4d2f-b3a2-ec9fe59f8071
+      body: dac55918-a496-4e18-a64d-52daf1d1b0da
+      shift: 0
+      eccentricity: 0.0
+      period: 2419200
+    color: White
+    children: []
+    rotational_period: 2419200
+    temperature: 240
+  - id: ba960281-1eb6-4f45-9b40-1c87a34dd316
+    name: Sun
+    orbit: ~
+    color: Yellow
+    children:
+      - 68f83dbc-1894-4d2f-b3a2-ec9fe59f8071
+    rotational_period: 2419200
+    temperature: 5800
+records:
+  - id: b2c77503-be2e-45ff-80f8-7e44066b724b
+    note: You spot a party in the distance
+    date:
+      date:
+        year: 1
+        month: 0
+        day: 0
+      time:
+        hour: 2
+        minute: 0
+        second: 0
+    chars: []
+    locs: []
+  - id: d979be27-ccc4-4b85-8edc-65b66ebae433
+    note: "@alex flies to #backville"
+    date:
+      date:
+        year: 1
+        month: 0
+        day: 0
+      time:
+        hour: 2
+        minute: 0
+        second: 10
+    chars:
+      - id: 0b439ab6-f4f8-4796-93a9-a5048b35e856
+        string: "@alex"
+        start: 1
+        end: 5
+    locs:
+      - id: 32425106-6690-4519-b5be-7bfb6d82dea6
+        string: "#backville"
+        start: 16
+        end: 25
+  - id: 714eb93c-ef1c-4f62-8710-a17990b2e124
+    note: "The party stumbles upon a new enemy: a @snorlax"
+    date:
+      date:
+        year: 1
+        month: 1
+        day: 11
+      time:
+        hour: 2
+        minute: 30
+        second: 11
+    chars:
+      - id: 0b439ab6-f4f8-4796-93a9-a5048b35e856
+        string: snorlax
+        start: 40
+        end: 47
+    locs: []
+  - id: 97f95557-70ff-4b70-bb54-63fd81a3c21c
+    note: "@alex flies away"
+    date:
+      date:
+        year: 1
+        month: 1
+        day: 11
+      time:
+        hour: 4
+        minute: 30
+        second: 13
+    chars:
+      - id: 68f83dbc-1894-4d2f-b3a2-ec9fe59f8071
+        string: alex
+        start: 1
+        end: 5
+    locs: []
+  - id: 0acff02d-f958-4f3c-a8e8-52d4fa76e916
+    note: "@alex travels to #riverton"
+    date:
+      date:
+        year: 1
+        month: 1
+        day: 25
+      time:
+        hour: 4
+        minute: 30
+        second: 14
+    chars:
+      - id: 68f83dbc-1894-4d2f-b3a2-ec9fe59f8071
+        string: alex
+        start: 1
+        end: 5
+    locs:
+      - id: d92152d8-a6bd-467e-8767-40fe29dc81d3
+        string: riverton
+        start: 18
+        end: 26
+  - id: 80ce0b2b-9f21-424c-a065-6c881a659851
+    note: "@alex stumbles wearily into #capital"
+    date:
+      date:
+        year: 1
+        month: 1
+        day: 25
+      time:
+        hour: 6
+        minute: 30
+        second: 15
+    chars:
+      - id: 68f83dbc-1894-4d2f-b3a2-ec9fe59f8071
+        string: alex
+        start: 1
+        end: 5
+    locs:
+      - id: ef2e3b92-ca2b-4d17-898f-0c73350b450e
+        string: capital
+        start: 29
+        end: 36
+characters:
+  - id: 68f83dbc-1894-4d2f-b3a2-ec9fe59f8071
+    identifier: alex
+    location: 68f83dbc-1894-4d2f-b3a2-ec9fe59f8071
+    name: Bannur Broodfist
+    description:
+      age: 77
+      height: 145
+      weight: 89
+      backstory: ~
+    race: Dwarf
+    health:
+      max: 10
+      status:
+        Alive:
+          current: 10
+          bonus: 0
+    inspiration: false
+    classes:
+      - - Fighter: Champion
+        - 1
+      - - ~
+        - 0
+      - - ~
+        - 0
+      - - ~
+        - 0
+    experience: ~
+locations:
+  - id: 68f83dbc-1894-4d2f-b3a2-ec9fe59f8071
+    identifier: backville
+    planet: 68f83dbc-1894-4d2f-b3a2-ec9fe59f8071
+  - id: d92152d8-a6bd-467e-8767-40fe29dc81d3
+    identifier: riverton
+    planet: 68f83dbc-1894-4d2f-b3a2-ec9fe59f8071
+  - id: ef2e3b92-ca2b-4d17-898f-0c73350b450e
+    identifier: capital
+    planet: 68f83dbc-1894-4d2f-b3a2-ec9fe59f8071

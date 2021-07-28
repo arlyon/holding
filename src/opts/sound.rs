@@ -1,7 +1,8 @@
-use rspotify::blocking::client::Spotify;
-use rspotify::blocking::oauth2::SpotifyClientCredentials;
-use rspotify::blocking::oauth2::SpotifyOAuth;
-use rspotify::blocking::util::get_token;
+use rspotify::{
+    client::{Spotify, SpotifyBuilder},
+    oauth2::{CredentialsBuilder, OAuth, OAuthBuilder},
+    scopes,
+};
 use std::fmt::Display;
 
 use anyhow::{anyhow, Context, Result};
@@ -122,25 +123,25 @@ pub enum Mood {
 
 impl Sound {
     pub fn run(&self) -> Result<()> {
-        let playlist = if *self != Sound::Auto {
-            self.to_string()
-        } else {
-            todo!()
+        let playlist = match self {
+            sound => sound.to_string(),
+            &Sound::Auto | &Sound::Stop => "".to_string(),
         };
 
-        let mut oauth = SpotifyOAuth::default()
-            .scope("user-modify-playback-state")
-            .build();
+        let mut oauth = OAuthBuilder::default()
+            .scope(scopes!("user-modify-playback-state"))
+            .build()
+            .unwrap();
 
-        let token_info = get_token(&mut oauth).ok_or_else(|| anyhow!("Could not get token."))?;
+        let creds = CredentialsBuilder::from_env().build().unwrap();
 
-        let client_credential = SpotifyClientCredentials::default()
-            .token_info(token_info)
-            .build();
+        let spotify = SpotifyBuilder::default()
+            .credentials(creds)
+            .oauth(oauth)
+            .build()
+            .unwrap();
 
-        let spotify = Spotify::default()
-            .client_credentials_manager(client_credential)
-            .build();
+        spotify.prompt_for_user_token();
 
         if let Sound::Stop = self {
             spotify
