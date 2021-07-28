@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::path::Path;
 
 use anyhow::Result;
 use clap::Clap;
@@ -24,8 +24,8 @@ pub struct TimeSwitch {
 }
 
 impl Time {
-    pub fn run(&self, path: &PathBuf) -> Result<()> {
-        let mut world = load_world(&path)?;
+    pub fn run(&self, path: &Path) -> Result<()> {
+        let mut world = load_world(path)?;
 
         match self {
             Time::Step(TimeSwitch { expr }) => {
@@ -53,7 +53,7 @@ impl Time {
             }
         }
 
-        save_world(&path, &world)?;
+        save_world(path, &world)?;
         Ok(())
     }
 }

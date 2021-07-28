@@ -1,7 +1,7 @@
 use std::{
     ffi::OsStr,
     fs::{create_dir_all, File},
-    path::PathBuf,
+    path::Path,
 };
 
 use anyhow::{anyhow, Context, Result};
@@ -12,12 +12,12 @@ use crate::world::World;
 /// Loads or creates a world at a given path.
 /// Fails if the path exists and the world
 /// could not be read.
-pub fn load_world(path: &PathBuf) -> Result<World> {
+pub fn load_world(path: &Path) -> Result<World> {
     if !path.exists() {
         return Err(anyhow!("Invalid path."));
     };
 
-    let mut path = path.clone();
+    let mut path = path.to_path_buf();
     if path.file_name() != Some(OsStr::new("world.yaml")) {
         path.push("world.yaml");
     }
@@ -30,18 +30,18 @@ pub fn load_world(path: &PathBuf) -> Result<World> {
     Ok(world_data)
 }
 
-pub fn save_world(path: &PathBuf, data: &World) -> Result<()> {
+pub fn save_world(path: &Path, world: &World) -> Result<()> {
     if !path.exists() {
         return Err(anyhow!("Invalid path."));
     };
 
-    let mut path = path.clone();
+    let mut path = path.to_path_buf();
     if path.file_name() != Some(OsStr::new("world.yaml")) {
         path.push("world.yaml");
     }
 
     let f = File::create(&path).context("Couldn't find world.")?;
-    serde_yaml::to_writer(f, data).context("world file is corrupted.")?;
+    serde_yaml::to_writer(f, world).context("world file is corrupted.")?;
     Ok(())
 }
 
@@ -51,21 +51,24 @@ enum WorldCreationError {
     PathExists,
 }
 
-pub fn create_world(path: &PathBuf, name: String, force: bool) -> Result<World> {
+pub fn create_world(path: &Path, name: String, force: bool) -> Result<World> {
     if path.exists() && path.read_dir()?.next().is_some() && !force {
         return Err(WorldCreationError::PathExists);
     };
 
     create_dir_all(path)?;
 
-    let mut path = path.clone();
+    let mut path = path.to_path_buf();
     if path.file_name() != Some(OsStr::new("world.yaml")) {
         path.push("world.yaml");
     }
 
     let f = File::create(&path)?;
-    let mut world = World::default();
-    world.name = name;
+    let world = World {
+        name,
+        ..Default::default()
+    };
     serde_yaml::to_writer(f, &world)?;
+
     Ok(world)
 }

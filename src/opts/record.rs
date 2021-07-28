@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::path::Path;
 
 use anyhow::Result;
 use clap::Clap;
@@ -13,14 +13,14 @@ pub struct AddRecord {
 }
 
 impl AddRecord {
-    pub fn run(&self, path: &PathBuf) -> Result<()> {
-        let mut world = load_world(&path)?;
+    pub fn run(&self, path: &Path) -> Result<()> {
+        let mut world = load_world(path)?;
         let time = world.time;
         let cal = world.calendar.clone();
         let note = world.add_record(self.note.clone());
         println!("Noted at {}:\n{}", time.with_calendar(&cal), note.note());
-        save_world(&path, &world)?;
 
+        save_world(path, &world)?;
         Ok(())
     }
 }

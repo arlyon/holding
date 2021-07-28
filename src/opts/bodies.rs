@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::path::Path;
 
 use anyhow::Result;
 use clap::Clap;
@@ -20,7 +20,7 @@ pub enum Planetarium {
 }
 
 impl Planetarium {
-    pub fn run(&self, path: &PathBuf) -> Result<()> {
+    pub fn run(&self, path: &Path) -> Result<()> {
         match self {
             Planetarium::List => {
                 let world = load_world(path)?;

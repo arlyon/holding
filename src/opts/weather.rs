@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::path::Path;
 
 use anyhow::Result;
 use clap::Clap;
@@ -8,7 +8,7 @@ use clap::Clap;
 pub struct Weather {}
 
 impl Weather {
-    pub fn run(&self, _path: &PathBuf) -> Result<()> {
+    pub fn run(&self, _path: &Path) -> Result<()> {
         todo!();
     }
 }

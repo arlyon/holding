@@ -1,6 +1,6 @@
 use anyhow::Result;
 use clap::Clap;
-use std::path::PathBuf;
+use std::path::Path;
 
 use crate::persistence::create_world;
 
@@ -16,7 +16,7 @@ pub struct New {
 }
 
 impl New {
-    pub fn run(&self, path: &PathBuf) -> Result<()> {
+    pub fn run(&self, path: &Path) -> Result<()> {
         create_world(path, self.name.clone(), self.force)?;
         println!("Created world {}", self.name);
         Ok(())
