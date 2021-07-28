@@ -15,8 +15,8 @@ version = "0.1.0"
 
 [dependencies]
 anyhow = "1.0"
-clap = "3.0.0-beta.1"
-clap_generate = "3.0.0-beta.1"
+clap = {git = "https://github.com/clap-rs/clap.git", branch = "master"}
+clap_generate = {git = "https://github.com/clap-rs/clap.git", branch = "master"}
 dnd_dice_roller = "0.4"
 holding_color = {path = "holding_color", version = "0.1"}
 holding_kronos = {path = "holding_kronos", version = "0.2", features = ["serde"]}

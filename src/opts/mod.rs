@@ -44,13 +44,16 @@ pub struct Opts {
 #[derive(Clap)]
 pub enum Command {
     Dice(Dice),
+    #[clap(subcommand)]
     Characters(Characters),
     Now(Now),
     New(New),
+    #[clap(subcommand)]
     Time(Time),
     Record(AddRecord),
     History(History),
     Weather(Weather),
+    #[clap(subcommand)]
     Planetarium(Planetarium),
     #[cfg(feature = "sound")]
     Sound(Sound),
