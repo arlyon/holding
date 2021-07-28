@@ -288,9 +288,9 @@ pub enum ParseDateTimeError {
     NoRelativeReferencePoint,
 }
 
-impl Into<ParseDateTimeError> for InvalidDateTimeError {
-    fn into(self) -> ParseDateTimeError {
-        match self {
+impl From<InvalidDateTimeError> for ParseDateTimeError {
+    fn from(val: InvalidDateTimeError) -> Self {
+        match val {
             InvalidDateTimeError::InvalidDate(d) => ParseDateTimeError::InvalidDate(d),
             InvalidDateTimeError::InvalidTime(t) => ParseDateTimeError::InvalidTime(t),
         }

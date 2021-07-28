@@ -1,16 +1,15 @@
-use crate::orbit::OrbitValidationError;
-use holding_kronos::Calendar;
+use holding_kronos::calendar::{traits::ConvertTime, Calendar};
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 use uuid::Uuid;
 
 use holding_color::Color;
 
-use crate::orbit::Orbit;
+use crate::orbit::{self, Orbit};
 
 /// A unique identifier for celestial bodies.
 #[derive(Copy, Clone, Deserialize, Serialize, PartialEq, Eq, Debug)]
-pub struct PlanetId(Uuid);
+pub struct PlanetId(pub Uuid);
 
 /// A celestial body.
 #[derive(Clone, Deserialize, Serialize, Debug)]
@@ -32,7 +31,7 @@ pub struct CelestialBody {
 
     /// The number of seconds the planet
     /// takes to rotate.
-    pub rotational_period: usize,
+    pub rotational_period: u32,
 
     /// The temperature in degrees kelvin.
     pub temperature: i32,
@@ -40,7 +39,7 @@ pub struct CelestialBody {
 
 impl CelestialBody {
     /// Creates a new `CelestialBody`.
-    pub fn new(name: String, temperature: i32, rotational_period: usize, color: Color) -> Self {
+    pub fn new(name: String, temperature: i32, rotational_period: u32, color: Color) -> Self {
         Self {
             id: PlanetId(Uuid::new_v4()),
             name,
@@ -60,7 +59,7 @@ impl CelestialBody {
     }
 
     /// Adds a new moon to this planet.
-    pub fn with_moon(&mut self, moon: &mut CelestialBody, period: usize) -> &mut Self {
+    pub fn with_moon(&mut self, moon: &mut CelestialBody, period: u32) -> &mut Self {
         let orbit = Orbit::from_period(moon, self.id, period, 0);
         moon.orbit = Some(orbit);
         self.children.push(moon.id);
@@ -68,7 +67,7 @@ impl CelestialBody {
     }
 
     /// Sets the parent of this planet.
-    pub fn with_parent(&mut self, parent: &mut CelestialBody, period: usize) -> &mut Self {
+    pub fn with_parent(&mut self, parent: &mut CelestialBody, period: u32) -> &mut Self {
         let orbit = Orbit::from_period(self, parent.id, period, 0);
         self.orbit = Some(orbit);
         parent.children.push(self.id);
@@ -79,7 +78,7 @@ impl CelestialBody {
     /// ensuring the rotational and orbital
     /// periods are correct.
     pub fn validate_calendar(&self, calendar: &Calendar) -> Result<bool, ValidationError> {
-        let planet_period = self.rotational_period as u32;
+        let planet_period = self.rotational_period;
         let calendar_period = calendar.days_to_seconds(1);
         let x = if planet_period != calendar_period {
             Err(ValidationError::InconsistentRotationalPeriod(
@@ -103,13 +102,7 @@ pub enum ValidationError {
     #[error("the rotational period is inconsistent. planet: {0}, calendar: {1}")]
     InconsistentRotationalPeriod(u32, u32),
     #[error("invalid orbit: {0}")]
-    OrbitValidationError(OrbitValidationError),
-}
-
-impl From<OrbitValidationError> for ValidationError {
-    fn from(e: OrbitValidationError) -> Self {
-        Self::OrbitValidationError(e)
-    }
+    OrbitValidationError(#[from] orbit::ValidationError),
 }
 
 /// Keeps track of `CelestialBody`s.
@@ -125,7 +118,7 @@ pub trait PlanetStore {
         &mut self,
         name: String,
         temperature: i32,
-        rotational_period: usize,
+        rotational_period: u32,
         color: Color,
     ) -> &CelestialBody;
 
@@ -134,7 +127,7 @@ pub trait PlanetStore {
     /// todo(arlyon): Allow this to fail if
     /// - either planet doesn't exist
     /// - the child is orbiting something else
-    fn add_orbit(&mut self, parent_id: PlanetId, child_id: PlanetId, period: usize) {
+    fn add_orbit(&mut self, parent_id: PlanetId, child_id: PlanetId, period: u32) {
         let mut child = self.get_planet_mut(child_id).unwrap();
         let orbit = Orbit::from_period(child, parent_id, period, 0);
         child.orbit = Some(orbit);

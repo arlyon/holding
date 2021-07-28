@@ -4,14 +4,15 @@
 //! orbits in relation to their parents, ignoring siblings.
 
 use std::convert::TryFrom;
-use std::f32::consts::PI;
+use std::f64::consts::PI;
 
 use num_enum::{IntoPrimitive, TryFromPrimitive};
 use serde::{Deserialize, Serialize};
 use strum_macros::Display;
 use thiserror::Error;
 
-use holding_kronos::{Calendar, CalendarDateTime};
+use holding_kronos::calendar::{traits::ConvertDate, Calendar};
+use holding_kronos::datetime::DateTime;
 
 use crate::{CelestialBody, PlanetId, PlanetStore};
 
@@ -30,26 +31,21 @@ pub struct Orbit {
     pub body: PlanetId,
 
     /// The starting offset for the orbit in days.
-    pub shift: usize,
+    pub shift: u32,
 
     /// The eccentricity of the orbit, or how elliptic it is.
-    pub eccentricity: f32,
+    pub eccentricity: f64,
 
     /// The amount of time a single orbit takes in seconds.
     ///
     /// For simplicity, valid planets _must_ have a period
     /// that is a multiple of the number of seconds in a day.
-    pub period: usize,
+    pub period: u32,
 }
 
 impl Orbit {
     /// Create a new orbit with a given perion.
-    pub fn from_period(
-        target: &CelestialBody,
-        parent: PlanetId,
-        period: usize,
-        shift: usize,
-    ) -> Self {
+    pub fn from_period(target: &CelestialBody, parent: PlanetId, period: u32, shift: u32) -> Self {
         Orbit {
             parent,
             body: target.id,
@@ -67,10 +63,10 @@ impl Orbit {
     pub fn from_radius(
         target: &CelestialBody,
         parent: PlanetId,
-        semimajor_axis: f32,
-        shift: usize,
+        semimajor_axis: f64,
+        shift: u32,
     ) -> Self {
-        let period = semimajor_axis.powf(3.0).sqrt() as usize;
+        let period = semimajor_axis.powf(3.0).sqrt() as u32;
         Orbit::from_period(target, parent, period, shift)
     }
 
@@ -78,11 +74,7 @@ impl Orbit {
     ///
     /// Only valid if the body being orbited is in turn
     /// orbiting something else (that gives off light).
-    pub fn get_phase(
-        &self,
-        lookup: &dyn PlanetStore,
-        date_time: CalendarDateTime,
-    ) -> Option<Phase> {
+    pub fn get_phase(&self, lookup: &dyn PlanetStore, date_time: DateTime) -> Option<Phase> {
         // luminous bodies don't have a visible phase.
         if lookup.get_planet(self.body)?.is_luminous() {
             return None;
@@ -98,46 +90,49 @@ impl Orbit {
         }
 
         // angle of moon relative to parent
-        let theta_moon = self.get_orbit_radians(date_time.modulo(self.period as u32));
+        let theta_moon = self.get_orbit_radians(date_time.seconds_modulo(self.period));
 
         // angle of parent relative to sun
         let theta_parent =
-            parent_orbit.get_orbit_radians(date_time.modulo(parent_orbit.period as u32));
+            parent_orbit.get_orbit_radians(date_time.seconds_modulo(parent_orbit.period));
 
         let mut theta = theta_moon - theta_parent;
         if theta.is_sign_negative() {
             theta += 2.0 * PI
         };
 
+        let index = (theta * 4.0 / PI) as u8;
+
         // we multiply 4/pi to put it in the range [0,8)
-        Some(Phase::try_from((theta * 4.0 / PI) as u8).expect("This should be in range."))
+        Some(Phase::try_from(index).expect("This should be in range"))
     }
 
     /// Given some day, gets the radians relative to the periapsis.
-    pub fn get_orbit_radians(&self, seconds: u32) -> f32 {
-        (seconds as usize + self.shift) as f32 / self.period as f32 % 1.0 * 2.0 * PI
+    pub fn get_orbit_radians(&self, seconds: u32) -> f64 {
+        f64::from(seconds + self.shift) / f64::from(self.period) % 1.0 * 2.0 * PI
     }
 
     /// Calculates the distance between a body and its parent.
-    pub fn get_distance(&self, seconds: u32) -> f32 {
+    pub fn get_distance(&self, seconds: u32) -> f64 {
         let radians = self.get_orbit_radians(seconds);
         self.semimajor_axis() * (1.0 - self.eccentricity.powf(2.0))
             / (1.0 + self.eccentricity * radians.cos())
     }
 
-    /// Gets the semimajor axis
-    pub fn semimajor_axis(&self) -> f32 {
-        (self.period as f32).powf(2.0).powf(-3.0)
+    /// Gets the semimajor axis of the orbit ie. the furthest
+    /// distance of orbit. This is dependent on eccentricity.
+    pub fn semimajor_axis(&self) -> f64 {
+        f64::from(self.period).powf(2.0).powf(-3.0)
     }
 
     /// Validates an orbit against a calendar,
     /// ensuring the period is correct.
-    pub fn validate_calendar(&self, calendar: &Calendar) -> Result<bool, OrbitValidationError> {
-        let planet_period = self.period as u32;
-        let calendar_period = calendar.years_to_seconds(1) as u32;
-        if planet_period != calendar_period {
-            Err(OrbitValidationError::InconsistentPeriod(
-                planet_period,
+    pub fn validate_calendar(&self, calendar: &Calendar) -> Result<bool, ValidationError> {
+        let calendar_period = calendar.years_to_seconds(1);
+
+        if self.period != calendar_period {
+            Err(ValidationError::InconsistentPeriod(
+                self.period,
                 calendar_period,
             ))
         } else {
@@ -147,7 +142,7 @@ impl Orbit {
 }
 
 #[derive(Error, Debug, Copy, Clone)]
-pub enum OrbitValidationError {
+pub enum ValidationError {
     #[error("the orbial period is inconsistent. planet: {0}, calendar: {1}")]
     InconsistentPeriod(u32, u32),
 }

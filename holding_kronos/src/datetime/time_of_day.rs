@@ -64,16 +64,17 @@ impl<'a> From<DateTime<'a>> for TimeOfDay {
 #[cfg(test)]
 mod test {
     use crate::datetime::time_of_day::TimeOfDay;
+    use test_case::test_case;
 
-    #[test]
-    pub fn get_time() {
-        assert_eq!(TimeOfDay::from_time(0, 8), TimeOfDay::LateNight);
-        assert_eq!(TimeOfDay::from_time(1, 8), TimeOfDay::Dawn);
-        assert_eq!(TimeOfDay::from_time(2, 8), TimeOfDay::Sunrise);
-        assert_eq!(TimeOfDay::from_time(3, 8), TimeOfDay::Morning);
-        assert_eq!(TimeOfDay::from_time(4, 8), TimeOfDay::Afternoon);
-        assert_eq!(TimeOfDay::from_time(5, 8), TimeOfDay::Sunset);
-        assert_eq!(TimeOfDay::from_time(6, 8), TimeOfDay::Dusk);
-        assert_eq!(TimeOfDay::from_time(7, 8), TimeOfDay::Night);
+    #[test_case(0, 8, TimeOfDay::LateNight)]
+    #[test_case(1, 8, TimeOfDay::Dawn)]
+    #[test_case(2, 8, TimeOfDay::Sunrise)]
+    #[test_case(3, 8, TimeOfDay::Morning)]
+    #[test_case(4, 8, TimeOfDay::Afternoon)]
+    #[test_case(5, 8, TimeOfDay::Sunset)]
+    #[test_case(6, 8, TimeOfDay::Dusk)]
+    #[test_case(7, 8, TimeOfDay::Night)]
+    pub fn get_time(curr_hour: u32, max_hour: u32, time_of_day: TimeOfDay) {
+        assert_eq!(TimeOfDay::from_time(curr_hour, max_hour), Some(time_of_day));
     }
 }

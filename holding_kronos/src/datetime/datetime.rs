@@ -307,11 +307,11 @@ impl Display for DateTime<'_> {
     }
 }
 
-impl Into<RawDateTime> for DateTime<'_> {
-    fn into(self) -> RawDateTime {
+impl From<DateTime<'_>> for RawDateTime {
+    fn from(val: DateTime<'_>) -> Self {
         RawDateTime {
-            date: self.date.into(),
-            time: self.time.into(),
+            date: val.date.into(),
+            time: val.time.into(),
         }
     }
 }
@@ -337,7 +337,7 @@ mod test {
         calendar::traits::DayCycle,
         calendar::{traits::YearCycle, Calendar},
         datetime::{
-            traits::{ModifyDate, ShowDate, ShowTime},
+            traits::{ShowDate, ShowTime},
             DateTime, RawDate, RawTime,
         },
     };

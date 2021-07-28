@@ -1,10 +1,10 @@
 //! holding_solar: Simple celestial simulation.
 
+#![forbid(unsafe_code)]
 #![deny(
     missing_docs,
     trivial_casts,
     trivial_numeric_casts,
-    unsafe_code,
     unreachable_code,
     missing_copy_implementations,
     unused_import_braces,
@@ -16,7 +16,8 @@
     clippy::unused_self,
     clippy::unimplemented,
     clippy::trivially_copy_pass_by_ref,
-    clippy::panic
+    clippy::panic,
+    clippy::as_conversions
 )]
 
 mod orbit;

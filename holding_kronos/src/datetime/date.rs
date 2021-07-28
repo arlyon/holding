@@ -280,9 +280,9 @@ impl<'a> ModifyDate for Date<'a> {
     }
 }
 
-impl Into<RawDate> for Date<'_> {
-    fn into(self) -> RawDate {
-        self.date
+impl From<Date<'_>> for RawDate {
+    fn from(val: Date<'_>) -> Self {
+        val.date
     }
 }
 

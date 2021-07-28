@@ -1,10 +1,10 @@
 //! holding_color: An abstraction over colours.
 
+#![forbid(unsafe_code)]
 #![deny(
     missing_docs,
     trivial_casts,
     trivial_numeric_casts,
-    unsafe_code,
     unreachable_code,
     missing_copy_implementations,
     unused_import_braces,

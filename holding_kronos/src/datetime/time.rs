@@ -237,9 +237,9 @@ impl<'a> Time<'a> {
     }
 }
 
-impl Into<RawTime> for Time<'_> {
-    fn into(self) -> RawTime {
-        self.time
+impl From<Time<'_>> for RawTime {
+    fn from(val: Time<'_>) -> Self {
+        val.time
     }
 }
 
